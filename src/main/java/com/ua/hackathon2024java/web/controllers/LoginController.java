@@ -14,19 +14,5 @@ public class LoginController {
         return "login"; // Повертаємо шаблон login.html
     }
 
-    @PostMapping("/login")
-    public String processLogin(
-            @RequestParam("email") String email,
-            @RequestParam("password") String password,
-            Model model) {
 
-//        // Додайте тут логіку аутентифікації користувача
-//        if (email.equals("test@example.com") && password.equals("password")) {
-//            model.addAttribute("message", "Login successful!");
-//            return "welcome"; // перенаправляємо на сторінку привітання після успішного входу
-//        } else {
-//            model.addAttribute("message", "Invalid email or password");
-//            return "login"; // повертаємо на сторінку входу з повідомленням про помилку
-//        }
-    }
 }
