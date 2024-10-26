@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reports/create").permitAll()
                         .requestMatchers("/api/reports/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
