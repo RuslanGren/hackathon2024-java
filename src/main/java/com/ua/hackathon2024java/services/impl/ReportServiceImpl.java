@@ -9,6 +9,7 @@ import com.ua.hackathon2024java.repository.ReportRepository;
 import com.ua.hackathon2024java.services.ReportService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,5 +52,26 @@ public class ReportServiceImpl implements ReportService {
                 .stream()
                 .map(reportDtoFactory::makeReportDtoResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReportResponseDto> findAllSorted(String sortBy) {
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        return reportRepository.findAll(sort)
+                .stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+    }
+    private ReportResponseDto convertToResponseDto(Report report) {
+        return ReportResponseDto.builder()
+                .id(report.getId())
+                .name(report.getName())
+                .city(report.getCity())
+                .number(report.getNumber())
+                .text(report.getText())
+//                .filesUrls(report.getFilesUrls())
+                .createdAt(report.getCreatedAt())
+//                .status(report.getStatus())
+                .build();
     }
 }

@@ -9,4 +9,5 @@ public interface ReportService {
     ReportResponseDto createReport(ReportRequestDto reportRequestDto);
     ReportResponseDto getReportResponseById(Long id);
     List<ReportResponseDto> findAll();
+    List<ReportResponseDto> findAllSorted(String sortBy);
 }

@@ -52,7 +52,7 @@
                     localStorage.setItem('jwtToken', data.token);
 
                     // Перенаправляємо користувача на іншу сторінку після успішного входу
-                    window.location.href = '/welcome';
+                    window.location.href = '/report';
                 } else {
                     // Обробка помилки (неправильні дані)
                     document.getElementById('error-message').textContent = 'Invalid email or password';

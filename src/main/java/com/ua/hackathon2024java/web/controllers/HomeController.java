@@ -4,12 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class LoginController {
+public class HomeController {
 
-    @GetMapping("/login")
-    public String showLoginForm() {
-        return "signIn";
+    @GetMapping("/home")
+    public String home() {
+        return "home"; // This should match the name of your HTML file (home.html)
     }
-
-
 }
