@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center">Admin Dashboard</h1>
+
+    <!-- Create Inspector Account Form -->
+    <h3>Create Inspector Account</h3>
+    <form th:action="@{/admin/inspectors}" th:method="post" id="create-inspector-form" class="mb-4">
+        <div class="form-group">
+            <label for="email">Inspector Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+        </div>
+        <div class="form-group">
+            <label for="regions">Allowed Regions</label>
+            <select id="regions" class="form-control" name="regions" multiple required>
+                <option th:each="region : ${regions}" th:value="${region}" th:text="${region}">Region</option>
+            </select>
+            <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple regions.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Account</button>
+    </form>
+
+    <!-- Inspectors List Table -->
+    <h3>All Inspectors</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Regions</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="inspector : ${inspectors}">
+            <td th:text="${inspector.email}">Inspector Email</td>
+            <td th:text="${inspector.regions}">Inspector Regions</td>
+            <td>
+                <form th:action="@{/admin/inspectors/{id}(id=${inspector.id})}" th:method="post" style="display:inline;">
+                    <select name="regions" multiple>
+                        <option th:each="region : ${regions}" th:value="${region}" th:text="${region}"
+                                th:selected="${inspector.regions.contains(region)}">Region</option>
+                    </select>
+                    <button class="btn btn-warning">Edit</button>
+                </form>
+                <form th:action="@{/admin/inspectors/delete/{id}(id=${inspector.id})}" th:method="post" style="display:inline;">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
