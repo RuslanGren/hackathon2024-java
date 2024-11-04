@@ -12,6 +12,7 @@ public class JwtResponseDto extends UserResponseDto {
                 user.getId(),
                 user.getEmail(),
                 user.getUsername(),
+                user.getRoles(),
                 user.getDescription(),
                 user.getNumber(),
                 user.getCreatedAt()

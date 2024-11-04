@@ -2,8 +2,6 @@ package com.ua.hackathon2024java.services.impl;
 
 import com.ua.hackathon2024java.DTOs.user.JwtRequestDto;
 import com.ua.hackathon2024java.DTOs.user.JwtResponseDto;
-import com.ua.hackathon2024java.DTOs.user.UserRequestDto;
-import com.ua.hackathon2024java.DTOs.user.UserResponseDto;
 import com.ua.hackathon2024java.config.CustomUserDetailsService;
 import com.ua.hackathon2024java.config.JwtTokenUtils;
 import com.ua.hackathon2024java.exceptions.BadRequestException;
@@ -18,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -28,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenUtils jwtTokenUtils;
 
     @Override
+    @Transactional
     public JwtResponseDto createAuthToken(JwtRequestDto request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
@@ -46,19 +44,16 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /*
     @Override
     @Transactional
     public UserResponseDto registerNewUser(UserRequestDto userRequestDto) {
-        if (!userRequestDto.getPassword().equals(userRequestDto.getRepeatPassword())) {
-            throw new BadRequestException("Passwords don't match");
-        }
-
         if (userService.findByEmail(userRequestDto.getEmail()).isPresent()) {
             throw new BadRequestException("User already exists");
         }
 
         return userService.createNewUser(userRequestDto);
     }
-
+    */
 
 }

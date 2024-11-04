@@ -2,8 +2,6 @@ package com.ua.hackathon2024java.controllers;
 
 import com.ua.hackathon2024java.DTOs.user.JwtRequestDto;
 import com.ua.hackathon2024java.DTOs.user.JwtResponseDto;
-import com.ua.hackathon2024java.DTOs.user.UserRequestDto;
-import com.ua.hackathon2024java.DTOs.user.UserResponseDto;
 import com.ua.hackathon2024java.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +18,10 @@ public class AuthController {
         return authService.createAuthToken(jwtRequestDto);
     }
 
+    /*
     @PostMapping("/register")
     public UserResponseDto register(@RequestBody @Valid UserRequestDto userRequestDto) {
         return authService.registerNewUser(userRequestDto);
     }
+    */
 }

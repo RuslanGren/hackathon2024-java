@@ -11,8 +11,4 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    public UserResponseDto getUser(@PathVariable Long id) {
-        return userService.getUserResponseDtoById(id);
-    }
 }

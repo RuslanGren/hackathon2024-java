@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Data
 @Builder
@@ -18,6 +19,8 @@ public class UserResponseDto {
     private String email;
 
     private String username;
+
+    private Set<String> roles;
 
     private String description;
 

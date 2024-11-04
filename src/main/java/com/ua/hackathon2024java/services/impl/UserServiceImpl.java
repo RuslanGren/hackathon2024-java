@@ -3,12 +3,14 @@ package com.ua.hackathon2024java.services.impl;
 
 import com.ua.hackathon2024java.DTOs.user.UserRequestDto;
 import com.ua.hackathon2024java.DTOs.user.UserResponseDto;
+import com.ua.hackathon2024java.entity.Role;
 import com.ua.hackathon2024java.entity.User;
 import com.ua.hackathon2024java.exceptions.BadRequestException;
 import com.ua.hackathon2024java.exceptions.DatabaseException;
 import com.ua.hackathon2024java.exceptions.UserNotFoundException;
 import com.ua.hackathon2024java.factories.UserDtoFactory;
 import com.ua.hackathon2024java.repository.UserRepository;
+import com.ua.hackathon2024java.services.RoleService;
 import com.ua.hackathon2024java.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserDtoFactory userDtoFactory;
     private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     @Override
     @Transactional
@@ -37,11 +40,52 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public String deleteUserById(Long id) {
+        try {
+            userRepository.delete(findById(id));
+        } catch (Exception e) {
+            throw new DatabaseException();
+        }
+
+        return "User successfully deleted";
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDto> findAllUserResponseDto() {
+        return userRepository.findAll()
+                .stream()
+                .map(userDtoFactory::makeUserResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public String updateUserRoles(Long userId, Set<String> rolesName) {
+        User user = findById(userId);
+
+        Set<Role> roles = roleService.findRolesByName(rolesName);
+
+        user.setRoles(roles);
+        saveUser(user);
+
+        return "Roles successfully updated";
+    }
+
+    @Override
+    @Transactional
     public UserResponseDto createNewUser(UserRequestDto userRequestDto) {
+        if (findByEmail(userRequestDto.getEmail()).isPresent()) {
+            throw new BadRequestException("User already exists");
+        }
+
+        Set<Role> roles = roleService.findRolesByName(userRequestDto.getRoles());
+
         User user = User.builder()
                 .username(userRequestDto.getUsername())
                 .email(userRequestDto.getEmail())
                 .password(passwordEncoder.encode(userRequestDto.getPassword()))
+                .roles(roles)
                 .build();
 
         userRepository.save(user);
@@ -73,6 +117,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
     }
 
     @Override
