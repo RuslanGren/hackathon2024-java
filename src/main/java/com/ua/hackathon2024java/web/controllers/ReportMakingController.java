@@ -20,20 +20,26 @@ public class ReportMakingController {
     }
 
     @PostMapping("/submit-complaint")
-    public String submitComplaint(@RequestParam("firstName") String firstName,
-                                  @RequestParam("lastName") String lastName,
-                                  @RequestParam("region") String region,
-                                  @RequestParam("city") String city,
-                                  @RequestParam("phone") String phone,
-                                  @RequestParam("subject") String subject,
-                                  @RequestParam("description") String description,
-                                  @RequestParam("category") String category,
-                                  @RequestParam("media") List<MultipartFile> media,
+    public String submitComplaint(@RequestParam(required = false) String firstName,
+                                  @RequestParam(required = false) String lastName,
+                                  @RequestParam(required = false) String region,
+                                  @RequestParam(required = false) String city,
+                                  @RequestParam(required = false) String phone,
+                                  @RequestParam String description,
+                                  @RequestParam String category,
+                                  @RequestParam List<MultipartFile> media,
+                                  @RequestParam(required = false) String contactInfo,
                                   Model model) {
-        // Обробка подання заявки
-        // Збереження заявки у базу даних або інші дії
+        // Process the submission
+        if (firstName != null && lastName != null && region != null && city != null && phone != null) {
+            // Detailed complaint
+            // Save the complaint with user details to the database
+        } else {
+            // Anonymous complaint
+            // Save the complaint as anonymous and optionally save contactInfo
+        }
 
-        // Збереження медіафайлів
+        // Save media files
         if (!media.isEmpty()) {
             for (MultipartFile file : media) {
                 try {
@@ -48,8 +54,8 @@ public class ReportMakingController {
             }
         }
 
-        // Повернення до головної сторінки з повідомленням про успішне подання
-        model.addAttribute("message", "Ваша заявка успішно подана!");
-        return "redirect:/";
+        // Return to the main page with a success message
+        model.addAttribute("message", "Заявку подано успішно!");
+        return "redirect:/create-complaint";
     }
 }
