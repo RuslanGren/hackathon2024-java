@@ -15,13 +15,23 @@ import java.time.Instant;
 public class ReportResponseDto {
     private Long id;
 
-    private String name;
+    private String status;
 
-    private String city;
+    private String firstName;
+
+    private String lastName;
+
+    private String fatherName;
 
     private String number;
 
+    private String region;
+
+    private String address;
+
     private String text;
+
+    private String url;
 
     @JsonProperty("created_at")
     private Instant createdAt;

@@ -2,14 +2,16 @@ package com.ua.hackathon2024java.services.impl;
 
 import com.ua.hackathon2024java.DTOs.report.ReportRequestDto;
 import com.ua.hackathon2024java.DTOs.report.ReportResponseDto;
+import com.ua.hackathon2024java.entity.Regions;
 import com.ua.hackathon2024java.entity.Report;
+import com.ua.hackathon2024java.entity.User;
 import com.ua.hackathon2024java.exceptions.BadRequestException;
 import com.ua.hackathon2024java.factories.ReportDtoFactory;
 import com.ua.hackathon2024java.repository.ReportRepository;
 import com.ua.hackathon2024java.services.ReportService;
 
+import com.ua.hackathon2024java.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +23,18 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final ReportDtoFactory reportDtoFactory;
+    private final UserService userService;
 
     @Override
     @Transactional
     public ReportResponseDto createReport(ReportRequestDto reportRequestDto) {
         Report report = Report.builder()
-                .name(reportRequestDto.getName())
-                .city(reportRequestDto.getCity())
+                .firstName(reportRequestDto.getFirstName())
+                .lastName(reportRequestDto.getLastName())
+                .fatherName(reportRequestDto.getFatherName())
                 .number(reportRequestDto.getNumber())
+                .region(Regions.getRegion(reportRequestDto.getRegion()))
+                .address(reportRequestDto.getAddress())
                 .text(reportRequestDto.getText())
                 .build();
 
@@ -55,23 +61,20 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<ReportResponseDto> findAllSorted(String sortBy) {
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        return reportRepository.findAll(sort)
-                .stream()
-                .map(this::convertToResponseDto)
-                .collect(Collectors.toList());
-    }
-    private ReportResponseDto convertToResponseDto(Report report) {
-        return ReportResponseDto.builder()
-                .id(report.getId())
-                .name(report.getName())
-                .city(report.getCity())
-                .number(report.getNumber())
-                .text(report.getText())
-//                .filesUrls(report.getFilesUrls())
-                .createdAt(report.getCreatedAt())
-//                .status(report.getStatus())
-                .build();
+    @Transactional
+    public List<ReportResponseDto> getReportsForLoggedUser() {
+        User user = userService.getUser();
+
+        Regions userRegion = user.getRoles().stream()
+                .filter(role -> role.getName().startsWith("REGION_"))
+                .findFirst()
+                .map(role -> Regions.getRegion(role.getName()))
+                .orElseThrow(() -> new RuntimeException("User does not have a region role"));
+
+        // Фільтруємо звіти за регіоном
+        List<Report> reports = reportRepository.findByRegion(userRegion);
+
+        // Перетворюємо звіти на DTO
+        return reports.stream().map(reportDtoFactory::makeReportDtoResponse).collect(Collectors.toList());
     }
 }

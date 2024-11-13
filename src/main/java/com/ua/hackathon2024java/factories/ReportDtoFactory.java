@@ -10,10 +10,15 @@ public class ReportDtoFactory {
     public ReportResponseDto makeReportDtoResponse(Report report) {
         return ReportResponseDto.builder()
                 .id(report.getId())
-                .name(report.getName())
-                .city(report.getCity())
+                .status(report.getStatus())
+                .firstName(report.getFirstName())
+                .lastName(report.getLastName())
+                .fatherName(report.getFatherName())
                 .number(report.getNumber())
+                .region(report.getRegion().name())
+                .address(report.getAddress())
                 .text(report.getText())
+                .url(report.getUrl())
                 .createdAt(report.getCreatedAt())
                 .build();
     }

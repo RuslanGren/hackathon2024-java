@@ -16,7 +16,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("/create")
-    public ReportResponseDto createReport(@RequestBody @Valid ReportRequestDto reportRequestDto) {
+    public ReportResponseDto createReport(@RequestBody ReportRequestDto reportRequestDto) {
         return reportService.createReport(reportRequestDto);
     }
 

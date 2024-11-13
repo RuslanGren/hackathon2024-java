@@ -41,16 +41,17 @@
 <div class="container mt-5">
     <h2>Received Complaints</h2>
 
-    <form th:action="@{/home}" method="get" class="mb-3">
+    <!-- Форма для сортування скарг -->
+    <form th:action="@{/reports}" method="get" class="mb-3">
         <label for="sortBy" class="mr-2">Sort by:</label>
         <select name="sortBy" id="sortBy" class="form-control" onchange="this.form.submit()">
             <option value="date" th:selected="${sortBy == 'date'}">Date</option>
             <option value="status" th:selected="${sortBy == 'status'}">Status</option>
             <option value="id" th:selected="${sortBy == 'id'}">ID</option>
-            <!-- Додайте інші параметри сортування, якщо потрібно -->
         </select>
     </form>
 
+    <!-- Таблиця для відображення скарг -->
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
         <tr>
@@ -62,10 +63,10 @@
         </thead>
         <tbody>
         <tr th:each="complaint : ${complaints}">
-            <td th:text="${complaint.id}">1</td>
-            <td th:text="${complaint.date}">2024-01-01</td>
-            <td th:text="${complaint.status}">Open</td>
-            <td th:text="${complaint.text}">Complaint text</td>
+            <td th:text="${complaint.id}"></td>
+            <td th:text="${complaint.createdAt}"></td>
+            <td th:text="${complaint.status}"></td>
+            <td th:text="${complaint.text}"></td>
         </tr>
         </tbody>
     </table>

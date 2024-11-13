@@ -19,19 +19,24 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String status;
 
-    private String city;
+    private String firstName;
+
+    private String lastName;
+
+    private String fatherName;
 
     private String number;
 
+    @Enumerated(EnumType.STRING)
+    private Regions region;
+
+    private String address;
+
     private String text;
 
-    @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "files_urls", joinColumns = @JoinColumn(name = "report_id"))
-    @Column(name = "files_urls")
-    private List<String> filesUrls = new ArrayList<>();
+    private String url;
 
     @Builder.Default
     @Column(name = "created_at")
