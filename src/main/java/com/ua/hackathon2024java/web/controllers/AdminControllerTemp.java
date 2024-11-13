@@ -22,11 +22,11 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminControllerTemp {
 
     private final InspectorService inspectorService;
 
-    public AdminController(InspectorService inspectorService) {
+    public AdminControllerTemp(InspectorService inspectorService) {
         this.inspectorService = inspectorService;
     }
 

@@ -79,10 +79,11 @@
             <!-- Додайте інші регіони, якщо потрібно -->
         </select>
     </form>
-
+    <form th:action="@{/download-pdf}" method="get">
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
         <tr>
+            <th>Choose</th>
             <th>ID</th>
             <th>Date</th>
             <th>Status</th>
@@ -95,6 +96,7 @@
         </thead>
         <tbody>
         <tr th:each="complaint : ${reports}">
+            <td><input type="checkbox" name="reportIds" th:value="${complaint.id}"></td>
             <td th:text="${complaint.id}">1</td>
             <td th:text="${complaint.date}">2024-01-01</td>
             <td th:text="${complaint.status}">Open</td>
@@ -106,6 +108,8 @@
         </tr>
         </tbody>
     </table>
+        <button type="submit" class="btn btn-primary">Download PDF</button>
+    </form>
 
     <p th:if="${message != null}" th:text="${message}">No complaints available.</p>
 </div>

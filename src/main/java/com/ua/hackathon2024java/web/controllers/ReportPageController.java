@@ -1,22 +1,27 @@
 package com.ua.hackathon2024java.web.controllers;
 
-import com.ua.hackathon2024java.services.ReportService;
 import com.ua.hackathon2024java.web.temporary.ReportResponseDtoTemp;
 import com.ua.hackathon2024java.web.temporary.ReportServiceTemp;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 public class ReportPageController {
 
     private final ReportServiceTemp reportServiceTemp;
+//    private final GoogleDriveUploader googleDriveUploader;
 
     public ReportPageController(ReportServiceTemp reportServiceTemp) {
         this.reportServiceTemp = reportServiceTemp;
+//        this.googleDriveUploader = googleDriveUploader;
     }
 
     @GetMapping("/report")
@@ -38,5 +43,19 @@ public class ReportPageController {
         }
 
         return "report"; // Назва шаблону для домашньої сторінки
+    }
+
+    @GetMapping("/download-pdf")
+    public ResponseEntity<byte[]> downloadPdf(@RequestParam List<Long> reportIds) throws IOException {
+        List<ReportResponseDtoTemp> reports = reportServiceTemp.findReportsByIds(reportIds);
+        byte[] pdfData = reportServiceTemp.generatePdfForReports(reports);
+
+//        googleDriveUploader.uploadFile(pdfData, "reports.pdf");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "reports.pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfData);
     }
 }

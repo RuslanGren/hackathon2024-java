@@ -1,7 +1,16 @@
 package com.ua.hackathon2024java.web.temporary;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.poi.common.usermodel.fonts.FontGroup;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -72,6 +81,50 @@ public class ReportServiceTemp {
 
         return reports;
     }
+    public byte[] generatePdfForReports(List<ReportResponseDtoTemp> reports) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            for (ReportResponseDtoTemp report : reports) {
+                PDPage page = new PDPage();
+                document.addPage(page);
+                InputStream fontStream = getClass().getResourceAsStream("/arial.ttf");
+                PDType0Font font = PDType0Font.load(document, fontStream);
+                try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                    contentStream.beginText();
+                    contentStream.setFont(font, 12);
+                    contentStream.newLineAtOffset(50, 700);
+                    contentStream.showText("ID: " + report.getId());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Date: " + report.getDate());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Status: " + report.getStatus());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Name: " + report.getName());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Region: " + report.getRegion());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("City: " + report.getCity());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Category: " + report.getCategory());
+                    contentStream.newLineAtOffset(0, -20);
+                    contentStream.showText("Text: " + report.getText());
+                    contentStream.endText();
+                }
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            return out.toByteArray();
+        }
+    }
+
+
+    public List<ReportResponseDtoTemp> findReportsByIds(List<Long> reportIds) {
+        List<ReportResponseDtoTemp> reports = getDummyReports(); // Отримуємо всі скарги
+
+        // Фільтруємо скарги за ID, що містяться в reportIds
+        return reports.stream()
+                .filter(report -> reportIds.contains(report.getId()))
+                .collect(Collectors.toList());
+    }
 
     private List<ReportResponseDtoTemp> getDummyReports() {
         // Creating dummy data for testing
@@ -81,4 +134,5 @@ public class ReportServiceTemp {
         reports.add(new ReportResponseDtoTemp(3L, "2024-01-02", "In Progress", "Complaint text 3", "Jim Beam", "Odessa", "Odessa", "Шахрайство"));
         return reports;
     }
+
 }
