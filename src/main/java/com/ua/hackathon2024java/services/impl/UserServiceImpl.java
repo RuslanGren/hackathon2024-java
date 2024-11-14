@@ -3,6 +3,7 @@ package com.ua.hackathon2024java.services.impl;
 
 import com.ua.hackathon2024java.DTOs.user.UserRequestDto;
 import com.ua.hackathon2024java.DTOs.user.UserResponseDto;
+import com.ua.hackathon2024java.entity.Regions;
 import com.ua.hackathon2024java.entity.Role;
 import com.ua.hackathon2024java.entity.User;
 import com.ua.hackathon2024java.exceptions.BadRequestException;
@@ -27,6 +28,12 @@ public class UserServiceImpl implements UserService {
     private final UserDtoFactory userDtoFactory;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+
+    @Override
+    public List<User> findAllUsersByRegion(Regions region) {
+        Role role = roleService.findByName(region.name()).orElseThrow(() -> new BadRequestException("Role not found"));
+        return userRepository.findAllByRoles(role);
+    }
 
     @Override
     @Transactional

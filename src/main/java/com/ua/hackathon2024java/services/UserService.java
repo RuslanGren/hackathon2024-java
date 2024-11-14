@@ -2,7 +2,7 @@ package com.ua.hackathon2024java.services;
 
 import com.ua.hackathon2024java.DTOs.user.UserRequestDto;
 import com.ua.hackathon2024java.DTOs.user.UserResponseDto;
-import com.ua.hackathon2024java.entity.Role;
+import com.ua.hackathon2024java.entity.Regions;
 import com.ua.hackathon2024java.entity.User;
 
 import java.util.List;
@@ -20,4 +20,5 @@ public interface UserService {
     String deleteUserById(Long id);
     String updateUserRoles(Long userId, Set<String> roles);
     List<UserResponseDto> findAllUserResponseDto();
+    List<User> findAllUsersByRegion(Regions region);
 }

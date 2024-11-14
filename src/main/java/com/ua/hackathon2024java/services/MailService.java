@@ -1,5 +1,8 @@
 package com.ua.hackathon2024java.services;
 
+import com.ua.hackathon2024java.entity.Regions;
+
 public interface MailService {
-    void sendVerificationEmail(String email, String subject, String text);
+    void sendEmail(String email, String subject, String text);
+    void sendMailsByRegion(Regions region);
 }

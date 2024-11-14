@@ -6,6 +6,7 @@ import com.ua.hackathon2024java.entity.*;
 import com.ua.hackathon2024java.exceptions.BadRequestException;
 import com.ua.hackathon2024java.factories.ReportDtoFactory;
 import com.ua.hackathon2024java.repository.ReportRepository;
+import com.ua.hackathon2024java.services.MailService;
 import com.ua.hackathon2024java.services.PdfConverterService;
 import com.ua.hackathon2024java.services.ReportService;
 
@@ -25,6 +26,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportDtoFactory reportDtoFactory;
     private final UserService userService;
     private final PdfConverterService pdfConverterService;
+    private final MailService mailService;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,12 +50,16 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional
     public ReportResponseDto createReport(ReportRequestDto reportRequestDto) {
+        Regions region = Regions.getRegion(reportRequestDto.getRegion());
+
+        mailService.sendMailsByRegion(region);
+
         Report report = Report.builder()
                 .firstName(reportRequestDto.getFirstName())
                 .lastName(reportRequestDto.getLastName())
                 .fatherName(reportRequestDto.getFatherName())
                 .number(reportRequestDto.getNumber())
-                .region(Regions.getRegion(reportRequestDto.getRegion()))
+                .region(region)
                 .address(reportRequestDto.getAddress())
                 .text(reportRequestDto.getText())
                 .status(ReportStatus.PENDING)
