@@ -40,17 +40,26 @@ public class ReportServiceImpl implements ReportService {
     ) {
 
         User user = userService.getUser();
-        Regions userRegion = user.getRoles().stream()
-                .filter(role -> role.getName().startsWith("REGION_"))
-                .findFirst()
-                .map(role -> Regions.getRegion(role.getName()))
-                .orElseThrow(() -> new RuntimeException("User does not have a region role"));
+
+        // Check if the user has the ADMIN role
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ADMIN"));
 
         Specification<Report> spec = Specification.where(ReportSpecifications.hasStatus(status))
                 .and(ReportSpecifications.hasCategory(category))
                 .and(ReportSpecifications.createdAtAfter(createdAfter))
-                .and(ReportSpecifications.createdAtBefore(createdBefore))
-                .and(ReportSpecifications.hasRegion(userRegion));
+                .and(ReportSpecifications.createdAtBefore(createdBefore));
+
+        // Apply region filtering only if the user is not an ADMIN
+        if (!isAdmin) {
+            Regions userRegion = user.getRoles().stream()
+                    .filter(role -> role.getName().startsWith("REGION_"))
+                    .findFirst()
+                    .map(role -> Regions.getRegion(role.getName()))
+                    .orElseThrow(() -> new RuntimeException("User does not have a region role"));
+
+            spec = spec.and(ReportSpecifications.hasRegion(userRegion));
+        }
 
         Sort sort = Sort.by(direction, sortBy);
 
