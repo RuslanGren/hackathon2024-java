@@ -108,9 +108,9 @@
             <td th:text="${report.text}">Complaint text 1</td>
             <!-- Action Form to Update Status -->
             <td>
+                <!-- Form for updating the status -->
                 <form action="/change-status" method="post" class="d-inline">
                     <input type="hidden" name="reportId" th:value="${report.id}">
-                    <!-- Change the name to match what the controller expects -->
                     <select name="status" class="form-control d-inline" style="width: auto;">
                         <option value="На розгляді" th:selected="${report.status == 'На розгляді'}">Pending</option>
                         <option value="В процесі" th:selected="${report.status == 'В процесі'}">In progress</option>
@@ -118,6 +118,12 @@
                         <option value="Відхилено" th:selected="${report.status == 'Відхилено'}">Rejected</option>
                     </select>
                     <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                </form>
+
+                <!-- Button for downloading PDF -->
+                <form th:action="@{/api/reports/download-pdf}" method="get" class="d-inline">
+                    <input type="hidden" name="reportId" th:value="${report.id}">
+                    <button type="submit" class="btn btn-success btn-sm">Download PDF</button>
                 </form>
             </td>
         </tr>

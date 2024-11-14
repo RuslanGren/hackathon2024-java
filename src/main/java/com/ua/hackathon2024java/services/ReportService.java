@@ -13,7 +13,7 @@ import java.util.List;
 public interface ReportService {
     ReportResponseDto createReport(ReportRequestDto reportRequestDto);
     ReportResponseDto getReportResponseById(Long id);
-    byte[] downloadPdf(Iterable<Long> reportIds);
+    byte[] downloadPdf(Long reportId);
     List<ReportResponseDto> filterAndSortReportsResponseDto(
             ReportStatus status,
             ReportCategory category,

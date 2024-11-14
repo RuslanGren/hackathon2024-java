@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,10 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public byte[] downloadPdf(Iterable<Long> reportIds) {
+    public byte[] downloadPdf(Long reportId) {
+
+        List<Long> reportIds = new ArrayList<>(); // temp
+        reportIds.add(reportId);
 
         List<ReportResponseDto> reports = reportRepository.findAllById(reportIds)
                 .stream()
@@ -107,6 +111,16 @@ public class ReportServiceImpl implements ReportService {
                 .collect(Collectors.toList());
 
         if (reports.isEmpty()) {
+            throw new BadRequestException("Reports not found");
+        }
+
+        Regions userRegion = userService.getUser().getRoles().stream()
+                .filter(role -> role.getName().startsWith("REGION_"))
+                .findFirst()
+                .map(role -> Regions.getRegion(role.getName()))
+                .orElseThrow(() -> new RuntimeException("User does not have a region role"));
+
+        if (!reports.getFirst().getRegion().equalsIgnoreCase(userRegion.name())) {
             throw new BadRequestException("Reports not found");
         }
 

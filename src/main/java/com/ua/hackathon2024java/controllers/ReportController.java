@@ -27,8 +27,8 @@ public class ReportController {
     }
 
     @GetMapping("/download-pdf")
-    public ResponseEntity<byte[]> downloadPdf(@RequestParam List<Long> reportIds) {
-        byte[] pdfData = reportService.downloadPdf(reportIds);
+    public ResponseEntity<byte[]> downloadPdf(@RequestParam Long reportId) {
+        byte[] pdfData = reportService.downloadPdf(reportId);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -39,8 +39,7 @@ public class ReportController {
 
     @PostMapping("/change-status")
     public String changeStatus(@RequestParam Long reportId, @RequestParam String status) {
-        reportService.changeStatus(reportId, status);
-        return "redirect:/reports";
+        return reportService.changeStatus(reportId, status);
     }
 
     @GetMapping
