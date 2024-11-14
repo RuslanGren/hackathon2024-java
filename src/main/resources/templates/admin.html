@@ -1,73 +1,257 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адміністрування користувачів</title>
+    <style>
+        /* Загальні стилі для сторінки */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .form-container {
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        hr {
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        select[multiple] {
+            height: 150px;
+            resize: none;
+        }
+
+        .form-group select {
+            width: auto;
+            padding: 10px;
+        }
+
+        .form-group button {
+            align-self: flex-start;
+        }
+
+        /* Стилі для таблиці та дій користувачів */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .actions form {
+            display: inline;
+        }
+
+        .actions button {
+            background-color: #f44336;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .actions button:hover {
+            background-color: #e53935;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <h1 class="text-center">Admin Dashboard</h1>
+<div class="container">
+    <h1>Адміністрування користувачів</h1>
 
-    <!-- Create Inspector Account Form -->
-    <h3>Create Inspector Account</h3>
-    <form th:action="@{/admin/inspectors}" th:method="post" id="create-inspector-form" class="mb-4">
-        <div class="form-group">
-            <label for="email">Inspector Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
-        </div>
-        <div class="form-group">
-            <label for="regions">Allowed Regions</label>
-            <select id="regions" class="form-control" name="regions" multiple required>
-                <option th:each="region : ${regions}" th:value="${region}" th:text="${region}">Region</option>
-            </select>
-            <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple regions.</small>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Account</button>
-    </form>
+    <!-- Форма для створення нового користувача -->
+    <div class="form-container">
+        <h2>Створення нового користувача</h2>
+        <form action="/admin/users" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-    <!-- Inspectors List Table -->
-    <h3>All Inspectors</h3>
-    <button class="btn btn-success mb-3" onclick="exportToExcel()">Export to Excel</button>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Email</th>
-            <th>Regions</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="inspector : ${inspectors}">
-            <td th:text="${inspector.email}">Inspector Email</td>
-            <td th:text="${inspector.regions}">Inspector Regions</td>
-            <td>
-                <form th:action="@{/admin/inspectors/{id}(id=${inspector.id})}" th:method="post" style="display:inline;">
-                    <select name="regions" multiple>
-                        <option th:each="region : ${regions}" th:value="${region}" th:text="${region}"
-                                th:selected="${inspector.regions.contains(region)}">Region</option>
-                    </select>
-                    <button class="btn btn-warning">Edit</button>
-                </form>
-                <form th:action="@{/admin/inspectors/delete/{id}(id=${inspector.id})}" th:method="post" style="display:inline;">
-                    <button class="btn btn-danger">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="roles">Ролі</label>
+                <select id="roles" name="roles" multiple required>
+                    <option value="REGION_KYIV">Kyiv</option>
+                    <option value="REGION_LVIV">Lviv</option>
+                    <option value="REGION_ODESA">Odesa</option>
+                    <option value="REGION_DNIPRO">Dnipro</option>
+                    <option value="REGION_KHARKIV">Kharkiv</option>
+                    <option value="REGION_ZAPORIZHZHIA">Zaporizhzhia</option>
+                    <option value="REGION_VINNYTSIA">Vinnytsia</option>
+                    <option value="REGION_POLTAVA">Poltava</option>
+                    <option value="REGION_CHERNIHIV">Chernihiv</option>
+                    <option value="REGION_IVANO_FRANKIVSK">Ivano-Frankivsk</option>
+                    <option value="REGION_LUHANSK">Luhansk</option>
+                    <option value="REGION_DONETSK">Donetsk</option>
+                    <option value="REGION_RIVNE">Rivne</option>
+                    <option value="REGION_KHERSON">Kherson</option>
+                    <option value="REGION_KHMELNYTSKYI">Khmelnytskyi</option>
+                    <option value="REGION_CHERNIVTSI">Chernivtsi</option>
+                    <option value="REGION_SUMY">Sumy</option>
+                    <option value="REGION_ZHYTOMYR">Zhytomyr</option>
+                    <option value="REGION_CHERKASY">Cherkasy</option>
+                    <option value="REGION_MYKOLAIV">Mykolaiv</option>
+                    <option value="REGION_TERNOPIL">Ternopil</option>
+                    <option value="REGION_VOLYNSKA">Volynska</option>
+                    <option value="REGION_ZAKARPATSKA">Zakarpatska</option>
+                </select>
+            </div>
+
+            <button type="submit">Створити користувача</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- Редагування ролей користувачів -->
+    <div>
+        <h2>Редагувати ролі користувачів</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Ролі</th>
+                <th>Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Динамічне відображення користувачів з БД -->
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <ul>
+                        <li th:each="role : ${user.roles}" th:text="${role}"></li>
+                    </ul>
+                </td>
+                <td class="actions">
+                    <form th:action="@{/admin/users/{id}/roles(id=${user.id})}" method="POST">
+                        <label for="roles">Ролі</label>
+                        <select id="roles" name="roles" multiple>
+                            <option value="REGION_KYIV">Kyiv</option>
+                            <option value="REGION_LVIV">Lviv</option>
+                            <option value="REGION_ODESA">Odesa</option>
+                            <option value="REGION_DNIPRO">Dnipro</option>
+                            <option value="REGION_KHARKIV">Kharkiv</option>
+                            <option value="REGION_ZAPORIZHZHIA">Zaporizhzhia</option>
+                            <option value="REGION_VINNYTSIA">Vinnytsia</option>
+                            <option value="REGION_POLTAVA">Poltava</option>
+                            <option value="REGION_CHERNIHIV">Chernihiv</option>
+                            <option value="REGION_IVANO_FRANKIVSK">Ivano-Frankivsk</option>
+                            <option value="REGION_LUHANSK">Luhansk</option>
+                            <option value="REGION_DONETSK">Donetsk</option>
+                            <option value="REGION_RIVNE">Rivne</option>
+                            <option value="REGION_KHERSON">Kherson</option>
+                            <option value="REGION_KHMELNYTSKYI">Khmelnytskyi</option>
+                            <option value="REGION_CHERNIVTSI">Chernivtsi</option>
+                            <option value="REGION_SUMY">Sumy</option>
+                            <option value="REGION_ZHYTOMYR">Zhytomyr</option>
+                            <option value="REGION_CHERKASY">Cherkasy</option>
+                            <option value="REGION_MYKOLAIV">Mykolaiv</option>
+                            <option value="REGION_TERNOPIL">Ternopil</option>
+                            <option value="REGION_VOLYNSKA">Volynska</option>
+                            <option value="REGION_ZAKARPATSKA">Zakarpatska</option>
+                        </select>
+                        <button type="submit">Зберегти ролі</button>
+                    </form>
+
+                    <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="POST">
+                        <button type="submit">Видалити користувача</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<script>
-    function exportToExcel() {
-        window.location.href = "/admin/inspectors/export";
-    }
-</script>
 
 </body>
 </html>

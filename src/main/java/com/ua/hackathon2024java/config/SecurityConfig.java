@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reports/create").permitAll()
                         .requestMatchers("/api/reports/**").authenticated()
                         .requestMatchers("/reports").authenticated()
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         .anyRequest().permitAll())
                 .exceptionHandling(exception -> exception
