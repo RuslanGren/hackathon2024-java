@@ -20,7 +20,11 @@ public class ReportRequestDto {
 
     private String region;
 
+    private String category;
+
     private String address;
 
     private String text;
+
+    private String additionalInformation;
 }

@@ -39,79 +39,41 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Received Complaints</h2>
+    <h2>Received Reports</h2>
 
-    <form th:action="@{/report}" method="get" class="mb-3">
-        <label for="sortBy" class="mr-2">Sort by:</label>
-        <select name="sortBy" id="sortBy" class="form-control" onchange="this.form.submit()">
-            <option value="date" th:selected="${sortBy == 'date'}">Date</option>
-            <option value="status" th:selected="${sortBy == 'status'}">Status</option>
-            <option value="id" th:selected="${sortBy == 'id'}">ID</option>
-            <option value="name" th:selected="${sortBy == 'name'}">Name</option>
-            <option value="region" th:selected="${sortBy == 'region'}">Region</option>
-            <option value="city" th:selected="${sortBy == 'city'}">City</option>
-            <option value="category" th:selected="${sortBy == 'category'}">Category</option>
-        </select>
-
-        <label for="filterCategory" class="mr-2">Filter by Category:</label>
-        <select name="filterCategory" id="filterCategory" class="form-control" onchange="this.form.submit()">
-            <option value="" th:selected="${filterCategory == ''}">All</option>
-            <option value="Корупція" th:selected="${filterCategory == 'Корупція'}">Корупція</option>
-            <option value="Зловживання владою" th:selected="${filterCategory == 'Зловживання владою'}">Зловживання владою</option>
-            <option value="Шахрайство" th:selected="${filterCategory == 'Шахрайство'}">Шахрайство</option>
-            <option value="Інше" th:selected="${filterCategory == 'Інше'}">Інше</option>
-        </select>
-
-        <label for="filterStatus" class="mr-2">Filter by Status:</label>
-        <select name="filterStatus" id="filterStatus" class="form-control" onchange="this.form.submit()">
-            <option value="" th:selected="${filterStatus == ''}">All</option>
-            <option value="Open" th:selected="${filterStatus == 'Open'}">Open</option>
-            <option value="In Progress" th:selected="${filterStatus == 'In Progress'}">In Progress</option>
-            <option value="Closed" th:selected="${filterStatus == 'Closed'}">Closed</option>
-        </select>
-
-        <label for="filterRegion" class="mr-2">Filter by Region:</label>
-        <select name="filterRegion" id="filterRegion" class="form-control" onchange="this.form.submit()">
-            <option value="" th:selected="${filterRegion == ''}">All</option>
-            <option value="Kyiv" th:selected="${filterRegion == 'Kyiv'}">Kyiv</option>
-            <option value="Lviv" th:selected="${filterRegion == 'Lviv'}">Lviv</option>
-            <option value="Odessa" th:selected="${filterRegion == 'Odessa'}">Odessa</option>
-            <!-- Додайте інші регіони, якщо потрібно -->
-        </select>
-    </form>
     <form th:action="@{/download-pdf}" method="get">
-    <table class="table table-bordered table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th>Choose</th>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Name</th>
-            <th>Region</th>
-            <th>City</th>
-            <th>Category</th>
-            <th>Text</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="complaint : ${reports}">
-            <td><input type="checkbox" name="reportIds" th:value="${complaint.id}"></td>
-            <td th:text="${complaint.id}">1</td>
-            <td th:text="${complaint.date}">2024-01-01</td>
-            <td th:text="${complaint.status}">Open</td>
-            <td th:text="${complaint.name}">John Doe</td>
-            <td th:text="${complaint.region}">Kyiv</td>
-            <td th:text="${complaint.city}">Kyiv</td>
-            <td th:text="${complaint.category}">Корупція</td>
-            <td th:text="${complaint.text}">Complaint text 1</td>
-        </tr>
-        </tbody>
-    </table>
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th>Choose</th>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Region</th>
+                <th>City</th>
+                <th>Category</th>
+                <th>Text</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Виведення списку репортів -->
+            <tr th:each="report : ${reports}">
+                <td><input type="checkbox" name="reportIds" th:value="${report.id}"></td>
+                <td th:text="${report.id}">1</td>
+                <td th:text="${report.createdAt}">2024-01-01</td>
+                <td th:text="${report.getStatus()}">Open</td>
+                <td th:text="${report.firstName} + ' ' + ${report.lastName}">John Doe</td>
+                <td th:text="${report.getRegion()}">Kyiv</td>
+                <td th:text="${report.address}">Kyiv</td>
+                <td th:text="${report.getCategory()}">Корупція</td>
+                <td th:text="${report.text}">Complaint text 1</td>
+            </tr>
+            </tbody>
+        </table>
         <button type="submit" class="btn btn-primary">Download PDF</button>
     </form>
 
-    <p th:if="${message != null}" th:text="${message}">No complaints available.</p>
 </div>
 </body>
 </html>

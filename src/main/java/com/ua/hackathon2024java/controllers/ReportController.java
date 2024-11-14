@@ -3,8 +3,10 @@ package com.ua.hackathon2024java.controllers;
 import com.ua.hackathon2024java.DTOs.report.ReportRequestDto;
 import com.ua.hackathon2024java.DTOs.report.ReportResponseDto;
 import com.ua.hackathon2024java.services.ReportService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,5 +30,16 @@ public class ReportController {
     @GetMapping
     public List<ReportResponseDto> findAll() {
         return reportService.findAll();
+    }
+
+    @GetMapping("/download-pdf")
+    public ResponseEntity<byte[]> downloadPdf(@RequestParam List<Long> reportIds) {
+        byte[] pdfData = reportService.downloadPdf(reportIds);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "reports.pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfData);
     }
 }

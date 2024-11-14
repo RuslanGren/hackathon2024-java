@@ -36,7 +36,7 @@ public class AuthPageController {
             jwtCookie.setMaxAge(60 * 60); // Термін дії 1 година
             response.addCookie(jwtCookie);
 
-            return "redirect:/home"; // Успішний логін
+            return "redirect:/reports"; // Успішний логін
         } catch (Exception e) {
             model.addAttribute("error", "Invalid email or password");
             return "login"; // Помилка логіну

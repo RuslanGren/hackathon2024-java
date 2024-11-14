@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,7 +17,9 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ReportStatus status = ReportStatus.PENDING;
 
     private String firstName;
 
@@ -32,9 +32,14 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private Regions region;
 
+    @Enumerated(EnumType.STRING)
+    private ReportCategory category;
+
     private String address;
 
     private String text;
+
+    private String additionalInformation;
 
     private String url;
 

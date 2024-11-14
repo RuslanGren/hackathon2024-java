@@ -16,9 +16,8 @@ public class ReportPageController {
 
     @GetMapping("/reports")
     public String getReports(Model model) {
-        List<ReportResponseDto> complaints = reportService.getReportsForLoggedUser();
-        System.out.println(complaints.getFirst().getId());
-        model.addAttribute("complaints", complaints);
+        List<ReportResponseDto> reports = reportService.getReportsForLoggedUser();
+        model.addAttribute("reports", reports);
         return "reports";
     }
 }

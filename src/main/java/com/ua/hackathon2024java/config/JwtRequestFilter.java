@@ -28,19 +28,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = null;
         String username = null;
 
-        // Шукаємо токен у cookie
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("JWT".equals(cookie.getName())) {
-                    jwt = cookie.getValue();
-                    break;
+        // Перевіряємо заголовок Authorization
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwt = authorizationHeader.substring(7); // Отримуємо токен без "Bearer "
+        } else {
+            // Якщо не знайшли в заголовку, шукаємо в cookie
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if ("JWT".equals(cookie.getName())) {
+                        jwt = cookie.getValue();
+                        break;
+                    }
                 }
             }
         }
 
+        // Якщо токен є, проводимо перевірку
         if (jwt != null) {
             try {
-                username = jwtTokenUtils.getEmail(jwt);
+                username = jwtTokenUtils.getEmail(jwt);  // Отримуємо email користувача з токена
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     var auth = new UsernamePasswordAuthenticationToken(
                             username,
@@ -49,7 +56,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     .map(SimpleGrantedAuthority::new)
                                     .collect(Collectors.toList())
                     );
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    SecurityContextHolder.getContext().setAuthentication(auth);  // Налаштовуємо аутентифікацію
                 }
             } catch (ExpiredJwtException e) {
                 log.debug("Token has expired", e);
@@ -58,6 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
+        // Продовжуємо ланцюг фільтрів
         filterChain.doFilter(request, response);
     }
 }
