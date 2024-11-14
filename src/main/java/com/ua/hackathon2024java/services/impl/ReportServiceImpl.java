@@ -12,10 +12,13 @@ import com.ua.hackathon2024java.services.ReportService;
 
 import com.ua.hackathon2024java.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,20 +33,54 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ReportResponseDto> filterAndSortReports(
+            ReportStatus status, ReportCategory category,
+            Instant createdAfter, Instant createdBefore,
+            String sortBy, Sort.Direction direction
+    ) {
+
+        User user = userService.getUser();
+        Regions userRegion = user.getRoles().stream()
+                .filter(role -> role.getName().startsWith("REGION_"))
+                .findFirst()
+                .map(role -> Regions.getRegion(role.getName()))
+                .orElseThrow(() -> new RuntimeException("User does not have a region role"));
+
+        Specification<Report> spec = Specification.where(ReportSpecifications.hasStatus(status))
+                .and(ReportSpecifications.hasCategory(category))
+                .and(ReportSpecifications.createdAtAfter(createdAfter))
+                .and(ReportSpecifications.createdAtBefore(createdBefore))
+                .and(ReportSpecifications.hasRegion(userRegion));
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        List<Report> reports = reportRepository.findAll(spec, sort);
+
+        return reports.stream()
+                .map(reportDtoFactory::makeReportDtoResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public byte[] downloadPdf(Iterable<Long> reportIds) {
+
         List<ReportResponseDto> reports = reportRepository.findAllById(reportIds)
                 .stream()
                 .map(reportDtoFactory::makeReportDtoResponse)
                 .collect(Collectors.toList());
+
         if (reports.isEmpty()) {
             throw new BadRequestException("Reports not found");
         }
+
         byte[] result;
         try {
             result = pdfConverterService.generatePdfForReports(reports);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return result;
     }
 
@@ -78,32 +115,5 @@ public class ReportServiceImpl implements ReportService {
                         reportRepository.findById(id)
                                 .orElseThrow(() -> new BadRequestException("Report not found"))
                 );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ReportResponseDto> findAll() {
-        return reportRepository.findAll()
-                .stream()
-                .map(reportDtoFactory::makeReportDtoResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public List<ReportResponseDto> getReportsForLoggedUser() {
-        User user = userService.getUser();
-
-        Regions userRegion = user.getRoles().stream()
-                .filter(role -> role.getName().startsWith("REGION_"))
-                .findFirst()
-                .map(role -> Regions.getRegion(role.getName()))
-                .orElseThrow(() -> new RuntimeException("User does not have a region role"));
-
-        // Фільтруємо звіти за регіоном
-        List<Report> reports = reportRepository.findByRegion(userRegion);
-
-        // Перетворюємо звіти на DTO
-        return reports.stream().map(reportDtoFactory::makeReportDtoResponse).collect(Collectors.toList());
     }
 }

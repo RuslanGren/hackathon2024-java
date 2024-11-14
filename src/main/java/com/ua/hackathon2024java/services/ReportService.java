@@ -2,16 +2,22 @@ package com.ua.hackathon2024java.services;
 
 import com.ua.hackathon2024java.DTOs.report.ReportRequestDto;
 import com.ua.hackathon2024java.DTOs.report.ReportResponseDto;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.ua.hackathon2024java.entity.ReportCategory;
+import com.ua.hackathon2024java.entity.ReportStatus;
+import org.springframework.data.domain.Sort;
 
-import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 public interface ReportService {
     ReportResponseDto createReport(ReportRequestDto reportRequestDto);
     ReportResponseDto getReportResponseById(Long id);
-    List<ReportResponseDto> findAll();
-    List<ReportResponseDto> getReportsForLoggedUser();
     byte[] downloadPdf(Iterable<Long> reportIds);
+    List<ReportResponseDto> filterAndSortReports(
+            ReportStatus status,
+            ReportCategory category,
+            Instant createdAfter,
+            Instant createdBefore,
+            String sortBy,
+            Sort.Direction direction);
 }
