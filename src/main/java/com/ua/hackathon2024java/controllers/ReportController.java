@@ -26,11 +26,6 @@ public class ReportController {
         return reportService.createReport(reportRequestDto);
     }
 
-    @GetMapping("/{id}")
-    public ReportResponseDto findReportById(@PathVariable Long id) {
-        return reportService.getReportResponseById(id);
-    }
-
     @GetMapping("/download-pdf")
     public ResponseEntity<byte[]> downloadPdf(@RequestParam List<Long> reportIds) {
         byte[] pdfData = reportService.downloadPdf(reportIds);
@@ -40,6 +35,12 @@ public class ReportController {
         headers.setContentDispositionFormData("attachment", "reports.pdf");
 
         return ResponseEntity.ok().headers(headers).body(pdfData);
+    }
+
+    @PostMapping("/change-status")
+    public String changeStatus(@RequestParam Long reportId, @RequestParam String status) {
+        reportService.changeStatus(reportId, status);
+        return "redirect:/reports";
     }
 
     @GetMapping
@@ -52,6 +53,6 @@ public class ReportController {
             @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
 
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-        return reportService.filterAndSortReports(status, category, createdAfter, createdBefore, sortBy, direction);
+        return reportService.filterAndSortReportsResponseDto(status, category, createdAfter, createdBefore, sortBy, direction);
     }
 }

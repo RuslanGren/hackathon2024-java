@@ -10,9 +10,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -30,11 +33,18 @@ public class ReportPageController {
             @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction,
             Model model) {
 
-        List<ReportResponseDto> reports = reportService.filterAndSortReports(
+        List<ReportResponseDto> reports = reportService.filterAndSortReportsResponseDto(
                 status, category, createdAfter, createdBefore, sortBy, direction);
 
+        model.addAttribute("reportIds", new ArrayList<Long>()); // Pass an empty list or selected IDs
         model.addAttribute("reports", reports);
 
         return "reports";
+    }
+
+    @PostMapping("/change-status")
+    public String changeStatus(@RequestParam Long reportId, @RequestParam String status) {
+        reportService.changeStatus(reportId, status);
+        return "redirect:/reports";
     }
 }

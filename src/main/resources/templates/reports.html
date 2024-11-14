@@ -41,14 +41,14 @@
 <div class="container mt-5">
     <h2>Received Reports</h2>
 
-    <!-- Форма для фільтрації та сортування -->
+    <!-- Form for filtering and sorting -->
     <form th:action="@{/reports}" method="get">
         <div class="form-group">
             <label for="status">Status</label>
             <select name="status" class="form-control">
                 <option value="">All</option>
                 <option value="PENDING">Pending</option>
-                <option value="APPROVED">Approved</option>
+                <option value="ACCEPTED">Accepted</option>
                 <option value="REJECTED">Rejected</option>
             </select>
         </div>
@@ -80,39 +80,49 @@
         <button type="submit" class="btn btn-primary">Apply Filters</button>
     </form>
 
-    <form th:action="@{/api/reports/download-pdf}" method="get">
-        <table class="table table-bordered table-hover mt-4">
-            <thead class="thead-light">
-            <tr>
-                <th>Choose</th>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Name</th>
-                <th>Region</th>
-                <th>City</th>
-                <th>Category</th>
-                <th>Text</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Виведення списку репортів -->
-            <tr th:each="report : ${reports}">
-                <td><input type="checkbox" name="reportIds" th:value="${report.id}"></td>
-                <td th:text="${report.id}">1</td>
-                <td th:text="${report.createdAt}">2024-01-01</td>
-                <td th:text="${report.getStatus()}">Open</td>
-                <td th:text="${report.firstName} + ' ' + ${report.lastName}">John Doe</td>
-                <td th:text="${report.getRegion()}">Kyiv</td>
-                <td th:text="${report.address}">Kyiv</td>
-                <td th:text="${report.getCategory()}">Корупція</td>
-                <td th:text="${report.text}">Complaint text 1</td>
-            </tr>
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Download PDF</button>
-    </form>
-
+    <!-- Table of Reports -->
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="thead-light">
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Name</th>
+            <th>Region</th>
+            <th>Address</th>
+            <th>Category</th>
+            <th>Text</th>
+            <th>Actions</th> <!-- Action buttons for status update -->
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Displaying the list of reports -->
+        <tr th:each="report : ${reports}">
+            <td th:text="${report.id}">1</td>
+            <td th:text="${report.createdAt}">2024-01-01</td>
+            <td th:text="${report.status}">Open</td>
+            <td th:text="${report.firstName} + ' ' + ${report.lastName}">John Doe</td>
+            <td th:text="${report.region}">Kyiv</td>
+            <td th:text="${report.address}">Kyiv</td>
+            <td th:text="${report.category}">Корупція</td>
+            <td th:text="${report.text}">Complaint text 1</td>
+            <!-- Action Form to Update Status -->
+            <td>
+                <form action="/change-status" method="post" class="d-inline">
+                    <input type="hidden" name="reportId" th:value="${report.id}">
+                    <!-- Change the name to match what the controller expects -->
+                    <select name="status" class="form-control d-inline" style="width: auto;">
+                        <option value="На розгляді" th:selected="${report.status == 'На розгляді'}">Pending</option>
+                        <option value="В процесі" th:selected="${report.status == 'В процесі'}">In progress</option>
+                        <option value="Прийнято" th:selected="${report.status == 'Прийнято'}">Accepted</option>
+                        <option value="Відхилено" th:selected="${report.status == 'Відхилено'}">Rejected</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

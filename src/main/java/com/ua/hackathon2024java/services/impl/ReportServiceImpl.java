@@ -32,8 +32,41 @@ public class ReportServiceImpl implements ReportService {
     private final MailService mailService;
 
     @Override
+    @Transactional
+    public String changeStatus(Long id, String status) {
+        Report report = reportRepository.findById(id).orElseThrow(() -> new BadRequestException("Report not found"));
+
+
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        List<Report> userReports = filterAndSortReports(null, null, null, null, "id", direction);
+
+        if (userReports.contains(report)) {
+            report.setStatus(ReportStatus.fromLabel(status));
+            return "success";
+        } else {
+            throw new BadRequestException("Report does not meet the filter criteria");
+        }
+
+    }
+
+    @Override
     @Transactional(readOnly = true)
-    public List<ReportResponseDto> filterAndSortReports(
+    public List<ReportResponseDto> filterAndSortReportsResponseDto(
+            ReportStatus status,
+            ReportCategory category,
+            Instant createdAfter,
+            Instant createdBefore,
+            String sortBy,
+            Sort.Direction direction)
+    {
+        return filterAndSortReports(status, category, createdAfter, createdBefore, sortBy, direction).stream()
+                .map(reportDtoFactory::makeReportDtoResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Report> filterAndSortReports(
             ReportStatus status, ReportCategory category,
             Instant createdAfter, Instant createdBefore,
             String sortBy, Sort.Direction direction
@@ -41,7 +74,6 @@ public class ReportServiceImpl implements ReportService {
 
         User user = userService.getUser();
 
-        // Check if the user has the ADMIN role
         boolean isAdmin = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ADMIN"));
 
@@ -50,7 +82,6 @@ public class ReportServiceImpl implements ReportService {
                 .and(ReportSpecifications.createdAtAfter(createdAfter))
                 .and(ReportSpecifications.createdAtBefore(createdBefore));
 
-        // Apply region filtering only if the user is not an ADMIN
         if (!isAdmin) {
             Regions userRegion = user.getRoles().stream()
                     .filter(role -> role.getName().startsWith("REGION_"))
@@ -63,11 +94,7 @@ public class ReportServiceImpl implements ReportService {
 
         Sort sort = Sort.by(direction, sortBy);
 
-        List<Report> reports = reportRepository.findAll(spec, sort);
-
-        return reports.stream()
-                .map(reportDtoFactory::makeReportDtoResponse)
-                .collect(Collectors.toList());
+        return reportRepository.findAll(spec, sort);
     }
 
     @Override
