@@ -80,34 +80,36 @@
         </select>
     </form>
     <form th:action="@{/download-pdf}" method="get">
-    <table class="table table-bordered table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th>Choose</th>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Name</th>
-            <th>Region</th>
-            <th>City</th>
-            <th>Category</th>
-            <th>Text</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="complaint : ${reports}">
-            <td><input type="checkbox" name="reportIds" th:value="${complaint.id}"></td>
-            <td th:text="${complaint.id}">1</td>
-            <td th:text="${complaint.date}">2024-01-01</td>
-            <td th:text="${complaint.status}">Open</td>
-            <td th:text="${complaint.name}">John Doe</td>
-            <td th:text="${complaint.region}">Kyiv</td>
-            <td th:text="${complaint.city}">Kyiv</td>
-            <td th:text="${complaint.category}">Корупція</td>
-            <td th:text="${complaint.text}">Complaint text 1</td>
-        </tr>
-        </tbody>
-    </table>
+        <label for="folderName" class="mr-2">Folder Name:</label>
+        <input type="text" id="folderName" name="folderName" class="form-control mb-3">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th>Choose</th>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Region</th>
+                <th>City</th>
+                <th>Category</th>
+                <th>Text</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="complaint : ${reports}">
+                <td><input type="checkbox" name="reportIds" th:value="${complaint.id}"></td>
+                <td th:text="${complaint.id}">1</td>
+                <td th:text="${complaint.date}">2024-01-01</td>
+                <td th:text="${complaint.status}">Open</td>
+                <td th:text="${complaint.name}">John Doe</td>
+                <td th:text="${complaint.region}">Kyiv</td>
+                <td th:text="${complaint.city}">Kyiv</td>
+                <td th:text="${complaint.category}">Корупція</td>
+                <td th:text="${complaint.text}">Complaint text 1</td>
+            </tr>
+            </tbody>
+        </table>
         <button type="submit" class="btn btn-primary">Download PDF</button>
     </form>
 
