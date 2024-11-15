@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -31,6 +32,7 @@ public class ReportServiceImpl implements ReportService {
     private final UserService userService;
     private final PdfConverterService pdfConverterService;
     private final MailService mailService;
+    private final GoogleDriveService googleDriveService;
 
     @Override
     @Transactional
@@ -154,7 +156,22 @@ public class ReportServiceImpl implements ReportService {
                 .additionalInformation(reportRequestDto.getAdditionalInformation())
                 .build();
 
-        return reportDtoFactory.makeReportDtoResponse(reportRepository.save(report));
+        reportRepository.saveAndFlush(report);
+
+        String folderId = googleDriveService.createFolder(report.getId().toString(), null);
+        googleDriveService.updateFolderPermissionsForLink(folderId);
+
+
+        report.setUrl("https://drive.google.com/drive/u/0/folders/" + folderId);
+        reportRepository.saveAndFlush(report);
+
+        if (!reportRequestDto.getFiles().isEmpty()) {
+            for (MultipartFile file : reportRequestDto.getFiles()) {
+                googleDriveService.uploadFile(file, folderId);
+            }
+        }
+
+        return reportDtoFactory.makeReportDtoResponse(report);
     }
 
     @Override

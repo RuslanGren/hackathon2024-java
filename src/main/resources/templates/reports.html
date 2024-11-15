@@ -98,7 +98,7 @@
         <tbody>
         <!-- Displaying the list of reports -->
         <tr th:each="report : ${reports}">
-            <td th:text="${report.id}">1</td>
+            <td><a th:href="@{${report.url}}" th:text="${report.id}">1</a></td>
             <td th:text="${report.createdAt}">2024-01-01</td>
             <td th:text="${report.status}">Open</td>
             <td th:text="${report.firstName} + ' ' + ${report.lastName}">John Doe</td>

@@ -1,4 +1,4 @@
-package com.ua.hackathon2024java.googleservices;
+package com.ua.hackathon2024java.services.impl;
 
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -14,7 +14,8 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import org.springframework.stereotype.Controller;
+import com.google.api.services.drive.model.Permission;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.api.services.drive.model.File;
 
@@ -23,7 +24,8 @@ import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-@Controller
+
+@Service
 public class GoogleDriveService {
     private static final String APPLICATION_NAME = "ReportAgregation";
 
@@ -33,7 +35,22 @@ public class GoogleDriveService {
 
     private static final List<String> SCOPES =
             Collections.singletonList(DriveScopes.DRIVE_FILE);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials2.json";
+    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    public void updateFolderPermissionsForLink(String folderId) {
+        try {
+            // Створюємо об'єкт дозволу для публічного доступу
+            Permission permission = new Permission()
+                    .setType("anyone")  // Доступ для всіх
+                    .setRole("reader")  // Можна встановити "writer" або "reader"
+                    .setAllowFileDiscovery(false);  // Встановити true, якщо хочете, щоб цей доступ був видимим в пошуку Google Drive
+
+            // Додаємо або оновлюємо дозволи
+            getInstance().permissions().create(folderId, permission).execute();
+        } catch (IOException | GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
             throws IOException {
